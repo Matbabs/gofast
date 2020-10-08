@@ -228,7 +228,7 @@ To indicate an error has been thrown you can use:
 
 `res.Done <- false`
 
-> NB: in case of a new `gofast.Promise()` the code will execute the catch fucntion. 
+> NB: in case of a new `gofast.Promise()` the code will execute the catch function. 
 
 # Logs Display
 

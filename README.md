@@ -19,10 +19,6 @@
 
 # Install
 
-
-
-
-
 First check that __Go__ is correctly installed. [Download and install Go](https://golang.org/doc/install#testing)
 
 To use __GoFast__ in your project  use the commands below:
@@ -30,6 +26,10 @@ To use __GoFast__ in your project  use the commands below:
 `go get github.com/fatih/color` (dependency)
 
 `go get github.com/matbabs/gofast`
+
+Import also:
+
+`"github.com/matbabs/gofast"`
 
 
 # Worker Pools

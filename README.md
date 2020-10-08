@@ -1,8 +1,5 @@
-# GoFast Multithread Programming Tool
-
 ![GoFast](assets/gofast-small.png)
-
-GoFast 
+# Multithread Programming Tool
 
 ## Contents
 

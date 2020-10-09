@@ -10,6 +10,7 @@
     * [GoFast Way](#gofast-way)
     * [Scatter & Gather](#scatter-&-gather)
     * [Sequential Aproximation of PI](#sequential-aproximation-of-pi)
+	* [Pthread C Aproximation of PI](#pthread-c-aproximation-of-pi)
     * [GoFast Aproximation of PI](#gofast-aproximation-of-pi)
     * [Benchmark Test](#benchmark-test)
 * [Promises](#install)
@@ -122,6 +123,44 @@ func main(){
 
 ```
 
+### Pthread C Aproximation of PI
+
+```c
+typedef struct Step{
+    double start;
+    long inc;
+    double res;
+}Step;
+
+void* c_pi(void *st){
+    Step *step = st;   
+    for(long k=step->start;k<step->start+step->inc;k++){
+        step->res += 4.0 * pow(-1, k) / (2*k + 1);
+    }
+}
+
+#define NB_THREADS 50
+
+int main () { 
+    static long nb_pas = 100000000;
+    pthread_t  p_thread[NB_THREADS];
+    Step steps[NB_THREADS];
+    double pi,bloc; 
+    for(int i=0;i<NB_THREADS;i++){
+        bloc = nb_pas/NB_THREADS;
+        steps[i].start = bloc*i;
+        steps[i].inc = bloc;
+        steps[i].res = 0;
+        pthread_create(&p_thread[i],NULL, c_pi, &steps[i]);
+        pthread_join(p_thread[i],NULL);
+    }
+    for(int i=0;i<NB_THREADS;i++)
+        pi += steps[i].res;
+    printf("PI=%f\n",pi);
+    return 0;
+}
+```
+
 ### GoFast Aproximation of PI
 
 ```go
@@ -161,7 +200,7 @@ func main(){
 
 Operations: 100,000,000
 
-|   |  Sequential PI | pthread PI (50 threads)  | GoFast PI (50 threads) |
+|   |  Sequential PI | Pthread PI (50 threads)  | GoFast PI (50 threads) |
 |:---:|:---:|:---:|:---:|
 | res  | 3.141592663589326 | 3.141593 | 3.1415941535892244 |
 |  real | 9,114s  | 1,483s  | 0,196s |

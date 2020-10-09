@@ -19,10 +19,6 @@
 
 # Install
 
-
-
-
-
 First check that __Go__ is correctly installed. [Download and install Go](https://golang.org/doc/install#testing)
 
 To use __GoFast__ in your project  use the commands below:
@@ -30,6 +26,10 @@ To use __GoFast__ in your project  use the commands below:
 `go get github.com/fatih/color` (dependency)
 
 `go get github.com/matbabs/gofast`
+
+Import also:
+
+`"github.com/matbabs/gofast"`
 
 
 # Worker Pools
@@ -43,7 +43,7 @@ The goal is to run a function with 10 threads and wait for the end of their work
 ```go
 func worker(results chan<- bool) {
     /* ... */
-    done <- 1
+    done <- true
 }
 
 func main(){
@@ -73,7 +73,7 @@ Now we will show how GoFast can trigger 10 synchronized threads whose code is co
 ```go
 func worker(res gofast.Resolver) {
     /* ... */
-    res.Done <- 1
+    res.Done <- true
 }
 
 func main(){
@@ -104,11 +104,11 @@ func sequential_pi(n float64) float64 {
 
     pi := 0.0
     
-	for k := 0.0; k <= float64(n); k++ {
-		pi += 4 * math.Pow(-1, k) / (2*k + 1)
+    for k := 0.0; k <= float64(n); k++ {
+        pi += 4 * math.Pow(-1, k) / (2*k + 1)
     }
     
-	return pi
+    return pi
 }
 
 func main(){
@@ -127,31 +127,31 @@ func main(){
 ```go
 type Step struct{
 	start int
-	end int
+	inc int
 }
 
 func gofast_pi(res gofast.Resolver){
-	n := <-scatter
+	step := <-scatter
 	pi := 0.0
-	for k := float64(n.start) ; k <= float64(n.end); k++ {
+	for k := float64(step.start) ; k <= float64(step.inc); k++ {
 		pi += 4 * math.Pow(-1, k) / (2*k + 1)
 	}
 	gather <- pi
 	res.Done <- true
 }
 
-func main(){
+var NB_THREADS = 50
+var scatter = make(chan Step, NB_THREADS)
+var gather = make(chan float64, NB_THREADS)
 
+func main(){
 	var steps = 100000000
-	var NB_THREADS = 10
-	
+	pi := 0.0
 	gofast.WorkerPool(NB_THREADS,gofast_pi)
-	for i:= 0; i < NB_THREADS ; i++{ 
-        scatter <- Step{((steps)/NB_THREADS)*i,((steps)/NB_THREADS)*(i+1)}}
-	for i:= 0; i < NB_THREADS ; i++{ 
-        pi += <-gather}
+	block := ((steps)/NB_THREADS)
+	for i:= 0; i < NB_THREADS ; i++{ scatter<-Step{block*i,block} }
+	for i:= 0; i < NB_THREADS ; i++{ pi += <-gather }
 	fmt.Println(pi)
-	
 	gofast.WaitAll()
 }
 ```
@@ -196,7 +196,7 @@ func asyncFunction_Catch_(res gofast.Resolver){
 
 func main(){
 	gofast.WorkerPool(2,worker)
-	gofast.Promise(asyncFunction,asyncFunctionThen,asyncFunctionCatch)
+	gofast.Promise(asyncFunction,asyncFunction_Then_,asyncFunction_Catch_)
 	time.Sleep(1000 * time.Millisecond)
 	fmt.Println("main program")
 	gofast.WaitAll()
@@ -228,7 +228,7 @@ To indicate an error has been thrown you can use:
 
 `res.Done <- false`
 
-> NB: in case of a new `gofast.Promise()` the code will execute the catch fucntion. 
+> NB: in case of a new `gofast.Promise()` the code will execute the catch function. 
 
 # Logs Display
 

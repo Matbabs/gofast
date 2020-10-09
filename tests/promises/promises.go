@@ -8,8 +8,8 @@ import (
 
 func worker(res gofast.Resolver){
 	for i := 0; i < 3; i++ {
-		time.Sleep(1000 * time.Millisecond)
 		fmt.Println("worker")
+		time.Sleep(1000 * time.Millisecond)
 	}
 	res.Done <- true
 }

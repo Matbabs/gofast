@@ -2,7 +2,7 @@ package main
 
 import (
 	"time"
-	"github.com/matbabs/gofast"
+	"../../../gofast"
 	"fmt"
 )
 
@@ -11,13 +11,13 @@ func worker(res gofast.Resolver) {
 
 	gofast.Lock()
 
-	fmt.Println("enter")
+	fmt.Println("critical section")
 	time.Sleep(2000 * time.Millisecond)
-	fmt.Println("exit")
 
 	gofast.Unlock()
 
-    res.Done <- true
+
+	res.Done <- true
 }
 
 func main(){

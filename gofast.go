@@ -56,12 +56,14 @@ func manageSynchro(res Resolver){
 	synchronizer.Done() 
 }
 
-func MutexLock(){
+func Lock(){
+	synchronizer.Add(1)
 	mutex.Lock()
 }
 
-func MutexUnlock(){
+func Unlock(){
 	mutex.Unlock()
+	synchronizer.Done() 
 }
 
 //stream programmming

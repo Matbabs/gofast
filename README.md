@@ -20,6 +20,7 @@
     * [GoFast Aproximation of PI](#gofast-aproximation-of-pi)
     * [Benchmark Test](#benchmark-test)
 * [Promises](#promises)
+* [Mutex](#mutex)
 * [Manage Errors](#manage-errors)
 * [Logs Display](#logs-display)
 
@@ -263,6 +264,30 @@ worker
 worker
 then
 worker
+```
+
+# Mutex
+
+__GoFast__ itself uses group synchronization. To use Mutex it is necessary to use the functions defined by __GoFast__.
+
+```go
+func worker(res gofast.Resolver) {
+
+	gofast.Lock()
+
+	fmt.Println("critical section")
+	time.Sleep(2000 * time.Millisecond)
+
+	gofast.Unlock()
+
+	res.Done <- true
+}
+
+func main(){
+    gofast.WorkerPool(10,worker)
+	fmt.Println("main program")
+    gofast.WaitAll()
+}
 ```
 
 # Manage Errors

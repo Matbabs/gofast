@@ -145,16 +145,13 @@ var scatter = make(chan Step, NB_THREADS)
 var gather = make(chan float64, NB_THREADS)
 
 func main(){
-
 	var steps = 100000000
 	pi := 0.0
-	
 	gofast.WorkerPool(NB_THREADS,gofast_pi)
 	block := ((steps)/NB_THREADS)
-	for i:= 0; i < NB_THREADS ; i++{scatter<-Step{block*i,block}}
-	for i:= 0; i < NB_THREADS ; i++{pi += <-gather}
+	for i:= 0; i < NB_THREADS ; i++{ scatter<-Step{block*i,block} }
+	for i:= 0; i < NB_THREADS ; i++{ pi += <-gather }
 	fmt.Println(pi)
-	
 	gofast.WaitAll()
 }
 ```

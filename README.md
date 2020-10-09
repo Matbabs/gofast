@@ -159,10 +159,14 @@ func main(){
 
 ### Benchmark Test
 
-|   |  Sequential PI | GoFast PI (10 threads)  | GoFast PI (20 threads) |
+Operations: 100,000,000
+
+|   |  Sequential PI | pthread PI (50 threads)  | GoFast PI (50 threads) |
 |:---:|:---:|:---:|:---:|
-| time  |  9,051s | 2,008s | 1,942s |
-|  res | 3.141592663589326  | 3.1415932293834268  | 3.1415940826855784 |
+| res  | 3.141592663589326 | 3.141593 | 3.1415941535892244 |
+|  real | 9,114s  | 1,483s  | 0,196s |
+|  user | 9,113s | 1,478s | 0,190s |
+|  sys | 0,012s  | 0,004s | 0,008s |
 
 # Promises
 

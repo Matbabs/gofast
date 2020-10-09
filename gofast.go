@@ -25,11 +25,7 @@ func WorkerPool(nbThreads int,funct func(res Resolver)){
 		for i:=0; i < nbThreads; i++ {
 			go funct(res)
 		}
-		if status := <-res.Done; status == false{
-			errorLog(res.component)
-		}
-		if logger {doneLog(res.component)}
-		synchronizer.Done()
+		manageError(res)
     }()
 }
 
@@ -42,15 +38,15 @@ func Promise(funct func(res Resolver),then func(res Resolver),catch func(res Res
 		go funct(res)
 		if status := <-res.Done; status != false{
 			go then(res_then)
-			promiseError(res_then)
+			manageError(res_then)
 		} else {
 			go catch(res_catch)
-			promiseError(res_catch)
+			manageError(res_catch)
 		}
 	}()
 }
 
-func promiseError(res Resolver){
+func manageError(res Resolver){
 	if status := <-res.Done; status == false{
 		errorLog(res.component)
 	}

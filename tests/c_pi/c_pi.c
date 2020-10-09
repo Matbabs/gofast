@@ -33,6 +33,6 @@ int main () {
     }
     for(int i=0;i<NB_THREADS;i++)
         pi += steps[i].res;
-    printf("PI=%f\n",pi);
+    printf("%f\n",pi);
     return 0;
 }

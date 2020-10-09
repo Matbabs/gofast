@@ -1,6 +1,12 @@
 ![GoFast](assets/gofast-small.png)
 # Multithread Programming Tool
 
+![](https://img.shields.io/static/v1.svg?label=&message=GoFast&color=2cb6aa)
+![](https://img.shields.io/static/v1.svg?label=&message=Multithread&color=2cb6aa)
+![](https://img.shields.io/static/v1.svg?label=Tool&message=v0.0.1&color=edca9c)
+![](https://img.shields.io/static/v1.svg?label=Worker&message=Pools&color=e760a3)
+![](https://img.shields.io/static/v1.svg?label=Worker&message=Promises&color=e760a3)
+
 ## Contents
 
 * [Install](#install)
@@ -13,7 +19,7 @@
 	* [Pthread C Aproximation of PI](#pthread-c-aproximation-of-pi)
     * [GoFast Aproximation of PI](#gofast-aproximation-of-pi)
     * [Benchmark Test](#benchmark-test)
-* [Promises](#install)
+* [Promises](#promises)
 * [Manage Errors](#manage-errors)
 * [Logs Display](#logs-display)
 

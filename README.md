@@ -43,7 +43,7 @@ The goal is to run a function with 10 threads and wait for the end of their work
 ```go
 func worker(results chan<- bool) {
     /* ... */
-    done <- 1
+    done <- true
 }
 
 func main(){
@@ -73,7 +73,7 @@ Now we will show how GoFast can trigger 10 synchronized threads whose code is co
 ```go
 func worker(res gofast.Resolver) {
     /* ... */
-    res.Done <- 1
+    res.Done <- true
 }
 
 func main(){
@@ -196,7 +196,7 @@ func asyncFunction_Catch_(res gofast.Resolver){
 
 func main(){
 	gofast.WorkerPool(2,worker)
-	gofast.Promise(asyncFunction,asyncFunctionThen,asyncFunctionCatch)
+	gofast.Promise(asyncFunction,asyncFunction_Then_,asyncFunction_Catch_)
 	time.Sleep(1000 * time.Millisecond)
 	fmt.Println("main program")
 	gofast.WaitAll()

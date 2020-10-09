@@ -59,26 +59,30 @@ func manageSynchro(res Resolver){
 func Lock(){
 	synchronizer.Add(1)
 	mutex.Lock()
+	if logger {inCriticalLog()}
 }
 
 func Unlock(){
+	if logger {outCriticalLog()}
 	mutex.Unlock()
 	synchronizer.Done() 
 }
-
-//stream programmming
-
-//semaphore
-
-//mutex
 
 func ActivateLogs(act bool){
 	logger = act
 	if act {titleGoFast()}
 }
 
+func inCriticalLog(){
+	color.Yellow("[GOFAST] IN CRITICAL SECTION")
+}
+
+func outCriticalLog(){
+	color.Yellow("[GOFAST] OUT CRITICAL SECTION")
+}
+
 func doneLog(component string){
-	color.Green("[GOFAST] DONE : "+component)
+	color.Green("[GOFAST] SYNCHRO DONE : "+component)
 }
 
 func errorLog(component string){

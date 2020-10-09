@@ -2,10 +2,9 @@ package main
 
 import (
 	"time"
-	"../../../gofast"
+	"github.com/matbabs/gofast"
 	"fmt"
 )
-
 
 func worker(res gofast.Resolver) {
 
@@ -16,13 +15,12 @@ func worker(res gofast.Resolver) {
 
 	gofast.Unlock()
 
-
 	res.Done <- true
 }
 
 func main(){
-	gofast.ActivateLogs(true)
+	//gofast.ActivateLogs(true)
     gofast.WorkerPool(10,worker)
-	fmt.Println("main")
+	fmt.Println("main program")
     gofast.WaitAll()
 }

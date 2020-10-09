@@ -42,19 +42,19 @@ func Promise(funct func(res Resolver),then func(res Resolver),catch func(res Res
 		go funct(res)
 		if status := <-res.Done; status != false{
 			go then(res_then)
-			promiseError(&res_then.Done,res_then.component)
+			promiseError(res_then)
 		} else {
 			go catch(res_catch)
-			promiseError(&res_catch.Done,res_catch.component)
+			promiseError(res_catch)
 		}
 	}()
 }
 
-func promiseError(res *chan bool, component string){
-	if status := <-*res; status == false{
-		errorLog(component)
+func promiseError(res Resolver){
+	if status := <-res.Done; status == false{
+		errorLog(res.component)
 	}
-	if logger {doneLog(component)}
+	if logger {doneLog(res.component)}
 	synchronizer.Done() 
 }
 

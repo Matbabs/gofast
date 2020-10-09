@@ -7,6 +7,8 @@ import (
 
 var synchronizer sync.WaitGroup
 
+var mutex = &sync.Mutex{}
+
 var logger = false
 
 type Resolver struct{
@@ -53,6 +55,20 @@ func manageSynchro(res Resolver){
 	if logger {doneLog(res.component)}
 	synchronizer.Done() 
 }
+
+func Lock(){
+	mutex.Lock()
+}
+
+func Unlock(){
+	mutex.Unlock()
+}
+
+//stream programmming
+
+//semaphore
+
+//mutex
 
 func ActivateLogs(act bool){
 	logger = act

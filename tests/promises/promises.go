@@ -30,7 +30,6 @@ func asyncFunction_Catch_(res gofast.Resolver){
 	res.Done <- true
 }
 
-
 func main(){
 	gofast.ActivateLogs(true)
 	gofast.WorkerPool(2,worker)

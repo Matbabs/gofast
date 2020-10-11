@@ -7,7 +7,9 @@ import (
 
 var synchronizer sync.WaitGroup
 
-var mutex = &sync.Mutex{}
+var sems map[string]chan int
+
+var mutexs map[string]chan int
 
 var logger = false
 
@@ -56,16 +58,50 @@ func manageSynchro(res Resolver){
 	synchronizer.Done() 
 }
 
-func Lock(){
+func InitMutex(id string){
+	if mutexs == nil {
+		mutexs = make(map[string]chan int)
+	}
+	mutexs[id] = make(chan int, 1)
+}
+
+func DeleteMutex(id string){
+	delete(mutexs,id)
+}
+
+func Lock(id string){
 	synchronizer.Add(1)
-	mutex.Lock()
+	mutexs[id] <- 1
 	if logger {inCriticalLog()}
 }
 
-func Unlock(){
+func Unlock(id string){
 	if logger {outCriticalLog()}
-	mutex.Unlock()
+	<-mutexs[id]
 	synchronizer.Done() 
+}
+
+func InitSemaphore(id string, nbSemaphores int){
+	if sems == nil {
+		sems = make(map[string]chan int)
+	}
+	sems[id] = make(chan int, nbSemaphores)
+}
+
+func DeleteSemaphore(id string){
+	delete(sems,id)
+}
+
+func Acquire(id string){
+	synchronizer.Add(1)
+	sems[id] <- 1
+	if logger {inSemLog()}
+}
+
+func Release(id string){
+	if logger {outSemLog()}
+	<-sems[id]
+	synchronizer.Done()
 }
 
 func ActivateLogs(act bool){
@@ -79,6 +115,14 @@ func inCriticalLog(){
 
 func outCriticalLog(){
 	color.Yellow("[GOFAST] OUT CRITICAL SECTION")
+}
+
+func inSemLog(){
+	color.Yellow("[GOFAST] IN SEM SECTION")
+}
+
+func outSemLog(){
+	color.Yellow("[GOFAST] OUT SEM SECTION")
 }
 
 func doneLog(component string){

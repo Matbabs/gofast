@@ -8,19 +8,21 @@ import (
 
 func worker(res gofast.Resolver) {
 
-	gofast.Lock()
+	gofast.Lock("myMutex")
 
 	fmt.Println("critical section")
-	time.Sleep(2000 * time.Millisecond)
+	time.Sleep(1000 * time.Millisecond)
 
-	gofast.Unlock()
+	gofast.Unlock("myMutex")
 
 	res.Done <- true
 }
 
 func main(){
-	//gofast.ActivateLogs(true)
-    gofast.WorkerPool(10,worker)
-	fmt.Println("main program")
+
+	gofast.InitMutex("myMutex")
+
+	gofast.WorkerPool(10,worker)
+
     gofast.WaitAll()
 }

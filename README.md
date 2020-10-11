@@ -7,6 +7,8 @@
 ![](https://img.shields.io/static/v1.svg?label=Worker&message=Pools&color=e760a3)
 ![](https://img.shields.io/static/v1.svg?label=Worker&message=Promises&color=e760a3)
 ![](https://img.shields.io/static/v1.svg?label=Worker&message=Mutex&color=edca9c)
+![](https://img.shields.io/static/v1.svg?label=Worker&message=Semaphores&color=edca9c)
+
 
 
 ## Contents
@@ -23,6 +25,7 @@
     * [Benchmark Test](#benchmark-test)
 * [Promises](#promises)
 * [Mutex](#mutex)
+* [Semaphores](#semaphores)
 * [Manage Errors](#manage-errors)
 * [Logs Display](#logs-display)
 
@@ -272,25 +275,64 @@ worker
 
 __GoFast__ itself uses group synchronization. To use Mutex it is necessary to use the functions defined by __GoFast__.
 
+Use `gofast.InitMutex("<mutex name>")` to initialize a mutex.
+
+Lock and unlock a critical section with `gofast.Lock("<mutex name>")` & `gofast.Unlock("<mutex name>")`
+
 ```go
 func worker(res gofast.Resolver) {
 
-	gofast.Lock()
+	gofast.Lock("myMutex")
 
 	fmt.Println("critical section")
-	time.Sleep(2000 * time.Millisecond)
+	time.Sleep(1000 * time.Millisecond)
 
-	gofast.Unlock()
+	gofast.Unlock("myMutex")
 
 	res.Done <- true
 }
 
 func main(){
-    gofast.WorkerPool(10,worker)
-	fmt.Println("main program")
+
+	gofast.InitMutex("myMutex")
+
+	gofast.WorkerPool(10,worker)
+
     gofast.WaitAll()
 }
 ```
+
+# Semaphores
+
+__GoFast__ itself uses group synchronization. To use semaphores you can use the functions defined by __GoFast__. 
+
+Use `gofast.InitSemaphore("<semaphore name>",<semaphore capacity>)` to initialize a semaphore.
+
+Acquire and realease a section with `gofast.Acquire("<semaphore name>")` & `gofast.Release("<semaphore name>")`
+
+```go
+func worker(res gofast.Resolver){
+	
+	gofast.Acquire("mySem")
+
+	fmt.Println("in semaphore")
+	time.Sleep(2000 * time.Millisecond)
+
+	gofast.Release("mySem")
+	
+	res.Done <- true
+}
+
+func main(){
+	
+	gofast.InitSemaphore("mySem",2)
+
+	gofast.WorkerPool(6,worker)
+
+	gofast.WaitAll()
+}
+```
+
 
 # Manage Errors
 

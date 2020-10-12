@@ -192,8 +192,8 @@ func gofast_pi(res gofast.Resolver){
 }
 
 var NB_THREADS = 50
-var scatter = make(chan Step, NB_THREADS)
-var gather = make(chan float64, NB_THREADS)
+var scatter = make(chan Step)
+var gather = make(chan float64)
 
 func main(){
 	var steps = 100000000

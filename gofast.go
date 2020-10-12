@@ -16,6 +16,7 @@ var logger = false
 type Resolver struct{
 	Done chan bool
 	component string
+	capacity int
 }
 
 func WaitAll(){	
@@ -25,7 +26,7 @@ func WaitAll(){
 func WorkerPool(nbThreads int,funct func(res Resolver)){
 	synchronizer.Add(1)
 	go func(){
-		res := Resolver{make(chan bool, nbThreads),"WorkerPool"}
+		res := Resolver{make(chan bool, nbThreads),"WorkerPool", nbThreads}
 		for i:=0; i < nbThreads; i++ {
 			go funct(res)
 		}
@@ -36,11 +37,11 @@ func WorkerPool(nbThreads int,funct func(res Resolver)){
 func Promise(funct func(res Resolver),then func(res Resolver),catch func(res Resolver)){	
 	synchronizer.Add(1)
 	go func(){
-		res := Resolver{make(chan bool, 1),"Promise Init"}
-		res_then := Resolver{make(chan bool, 1),"Promise Then"}
-		res_catch := Resolver{make(chan bool, 1),"Promise Catch"}
+		res := Resolver{make(chan bool, 1),"Promise Init",1}
+		res_then := Resolver{make(chan bool, 1),"Promise Then",1}
+		res_catch := Resolver{make(chan bool, 1),"Promise Catch",1}
 		go funct(res)
-		if status := <-res.Done; status != false{
+		if status := <-res.Done; status {
 			go then(res_then)
 			manageSynchro(res_then)
 		} else {
@@ -51,8 +52,10 @@ func Promise(funct func(res Resolver),then func(res Resolver),catch func(res Res
 }
 
 func manageSynchro(res Resolver){
-	if status := <-res.Done; status == false{
-		errorLog(res.component)
+	for i:=0; i < res.capacity ; i++ {
+		if status := <-res.Done; !status {
+			errorLog(res.component)
+		}
 	}
 	if logger {doneLog(res.component)}
 	synchronizer.Done() 

@@ -16,7 +16,7 @@ func worker(res gofast.Resolver){
 
 func asyncFunction(res gofast.Resolver){
 	fmt.Println("new promise")
-	time.Sleep(3000 * time.Millisecond)
+	time.Sleep(1500 * time.Millisecond)
 	res.Done <- true
 }
 

@@ -18,7 +18,7 @@
     * [Examples](#examples)
     * [Native Way](#native-way)
     * [GoFast Way](#gofast-way)
-    * [Scatter & Gather](#scatter-&-gather)
+    * [Scatter And Gather](#scatter-and-gather)
     * [Sequential Aproximation of PI](#sequential-aproximation-of-pi)
 	* [Pthread C Aproximation of PI](#pthread-c-aproximation-of-pi)
     * [GoFast Aproximation of PI](#gofast-aproximation-of-pi)
@@ -106,7 +106,7 @@ func main(){
 > __Here you can see that the rest of the code is parallel and concurrent until the synchronization is done.__
 
 
-## Scatter & Gather
+## Scatter And Gather
 
 We are going to see how to parallelize the approximation of pi with 100,000,000 steps. The objective is to see the performance and how to send and retrieve data.
 

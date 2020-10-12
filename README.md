@@ -36,9 +36,9 @@ First check that __Go__ is correctly installed. [Download and install Go](https:
 
 To use __GoFast__ in your project  use the commands below:
 
-`go get github.com/fatih/color` (dependency)
+`go get -u github.com/fatih/color` (dependency)
 
-`go get github.com/matbabs/gofast`
+`go get -u github.com/matbabs/gofast`
 
 Import also:
 

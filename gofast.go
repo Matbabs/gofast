@@ -73,7 +73,6 @@ func DeleteMutex(id string){
 }
 
 func Lock(id string){
-	synchronizer.Add(1)
 	mutexs[id] <- 1
 	if logger {inCriticalLog()}
 }
@@ -81,7 +80,6 @@ func Lock(id string){
 func Unlock(id string){
 	if logger {outCriticalLog()}
 	<-mutexs[id]
-	synchronizer.Done() 
 }
 
 func InitSemaphore(id string, nbSemaphores int){
@@ -96,7 +94,6 @@ func DeleteSemaphore(id string){
 }
 
 func Acquire(id string){
-	synchronizer.Add(1)
 	sems[id] <- 1
 	if logger {inSemLog()}
 }
@@ -104,7 +101,6 @@ func Acquire(id string){
 func Release(id string){
 	if logger {outSemLog()}
 	<-sems[id]
-	synchronizer.Done()
 }
 
 func ActivateLogs(act bool){

@@ -1,3 +1,17 @@
+
+// GoFast - Matbabs 2020
+
+// It makes it possible to parallel the pools of workers, 
+// to make promises, mutex, and semaphores. 
+
+// The goal is to deploy them in a simple and light way.
+
+// The concept is to control all this via father threads 
+// synchronized with the "sync.WaitGroup" (limiting its 
+// use) on anonymous functions. This way the main code 
+// remains concurrent throughout the execution of the 
+// program.
+
 package gofast
 
 import (
@@ -5,24 +19,33 @@ import (
 	"github.com/fatih/color"
 )
 
+// I use the WaitGroup in a limited way because the goal 
+// is to have a lighter implementation. It is used for 
+// the synchronization of the father threads. The son 
+// threads being managed by simple chan ( easier).
 var synchronizer sync.WaitGroup
 
+// These maps serve to facilitate the naming of mutexes and 
+// semaphores. These are developed with simple chan. I use 
+// the syntactic capabilities of the language and make writing 
+// easier for the user.
 var sems map[string]chan int
-
 var mutexs map[string]chan int
 
+// Enable / Disable debugger
 var logger = false
 
+// Lets you know the resolution status and the name of the 
+// component being parallelized.
 type Resolver struct{
 	Done chan bool
 	component string
 	capacity int
 }
 
-func WaitAll(){	
-	defer synchronizer.Wait()
-}
-
+// Declares a thread pool concurrently (thanks to the anonymous 
+// function itself launched in a parent thread). Avoids the 
+// user to write the syntax of the "for" loop.
 func WorkerPool(nbThreads int,funct func(res Resolver)){
 	synchronizer.Add(1)
 	go func(){
@@ -34,6 +57,8 @@ func WorkerPool(nbThreads int,funct func(res Resolver)){
     }()
 }
 
+// The channels are used to make asynchronous requests. 
+// As WorkerPool the complete block is parallelized.
 func Promise(funct func(res Resolver),then func(res Resolver),catch func(res Resolver)){	
 	synchronizer.Add(1)
 	go func(){
@@ -51,6 +76,7 @@ func Promise(funct func(res Resolver),then func(res Resolver),catch func(res Res
 	}()
 }
 
+// Makes sure that the threads end correctly.
 func manageSynchro(res Resolver){
 	for i:=0; i < res.capacity ; i++ {
 		if status := <-res.Done; !status {
@@ -59,6 +85,11 @@ func manageSynchro(res Resolver){
 	}
 	if logger {doneLog(res.component)}
 	synchronizer.Done() 
+}
+
+// It is used for the ending synchronization of the father threads.
+func WaitAll(){	
+	defer synchronizer.Wait()
 }
 
 func InitMutex(id string){
@@ -103,6 +134,8 @@ func Release(id string){
 	<-sems[id]
 }
 
+// All the functions below are intended to handle logging and debugging.
+
 func ActivateLogs(act bool){
 	logger = act
 	if act {titleGoFast()}
@@ -133,5 +166,5 @@ func errorLog(component string){
 }
 
 func titleGoFast(){
-	color.Cyan("[GOFAST]\n\n")
+	color.Cyan("[GOFAST] v0.0.2\n\n")
 }

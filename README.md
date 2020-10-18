@@ -3,7 +3,7 @@
 
 ![](https://img.shields.io/static/v1.svg?label=&message=GoFast&color=2cb6aa)
 ![](https://img.shields.io/static/v1.svg?label=&message=Multithread&color=2cb6aa)
-![](https://img.shields.io/static/v1.svg?label=Tool&message=v0.0.1&color=edca9c)
+![](https://img.shields.io/static/v1.svg?label=Tool&message=v1.0.0&color=edca9c)
 ![](https://img.shields.io/static/v1.svg?label=Worker&message=Pools&color=e760a3)
 ![](https://img.shields.io/static/v1.svg?label=Worker&message=Promises&color=e760a3)
 ![](https://img.shields.io/static/v1.svg?label=Worker&message=Mutex&color=edca9c)

@@ -1,6 +1,6 @@
 // GoFast - Matbabs 2020
 
-// It makes it possible to parallel the pools of workers,
+// It makes it possible to parallel pools of workers,
 // to make promises, mutex, and semaphores.
 
 // The goal is to deploy them in a simple and light way.
@@ -30,6 +30,10 @@ var synchronizer sync.WaitGroup
 // easier for the user.
 var sems map[string]chan int
 var mutexs map[string]chan int
+
+// Mutexs to block data race on package global maps
+var semsMutex = make(chan int, 1)
+var mutexsMutex = make(chan int, 1)
 
 // Enable / Disable debugger
 var logger = false
@@ -93,15 +97,21 @@ func WaitAll() {
 	defer synchronizer.Wait()
 }
 
+// Init a Mutex chan in global map. Protect data race access
+// with a private package Mutex.
 func InitMutex(id string) {
+	mutexsMutex <- 1
 	if mutexs == nil {
 		mutexs = make(map[string]chan int)
 	}
 	mutexs[id] = make(chan int, 1)
+	<-mutexsMutex
 }
 
 func DeleteMutex(id string) {
+	mutexsMutex <- 1
 	delete(mutexs, id)
+	<-mutexsMutex
 }
 
 func Lock(id string) {
@@ -118,15 +128,21 @@ func Unlock(id string) {
 	<-mutexs[id]
 }
 
+// Init a Semaphore chan in global map. Protect data race access
+// with a private package Mutex.
 func InitSemaphore(id string, nbSemaphores int) {
+	semsMutex <- 1
 	if sems == nil {
 		sems = make(map[string]chan int)
 	}
 	sems[id] = make(chan int, nbSemaphores)
+	<-semsMutex
 }
 
 func DeleteSemaphore(id string) {
+	semsMutex <- 1
 	delete(sems, id)
+	<-semsMutex
 }
 
 func Acquire(id string) {
@@ -177,5 +193,5 @@ func errorLog(component string) {
 }
 
 func titleGoFast() {
-	color.Cyan("[GOFAST] v0.0.2\n\n")
+	color.Cyan("[GOFAST] v1.0.0\n\n")
 }

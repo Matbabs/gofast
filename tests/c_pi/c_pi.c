@@ -3,6 +3,8 @@
 #include <pthread.h>
 #include <math.h>
 
+//compile with `gcc c_pi.c -l pthread -lm -o c_pi`
+
 typedef struct Step{
     double start;
     long inc;
@@ -23,16 +25,17 @@ int main () {
     pthread_t  p_thread[NB_THREADS];
     Step steps[NB_THREADS];
     double pi,bloc; 
+    bloc = nb_pas/NB_THREADS;
     for(int i=0;i<NB_THREADS;i++){
-        bloc = nb_pas/NB_THREADS;
         steps[i].start = bloc*i;
         steps[i].inc = bloc;
         steps[i].res = 0;
         pthread_create(&p_thread[i],NULL, c_pi, &steps[i]);
-        pthread_join(p_thread[i],NULL);
     }
-    for(int i=0;i<NB_THREADS;i++)
+    for(int i=0;i<NB_THREADS;i++){
+        pthread_join(p_thread[i],NULL);
         pi += steps[i].res;
+    }
     printf("%f\n",pi);
     return 0;
 }

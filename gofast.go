@@ -14,8 +14,9 @@
 package gofast
 
 import (
-	"github.com/fatih/color"
 	"sync"
+
+	"github.com/fatih/color"
 )
 
 // I use the WaitGroup in a limited way because the goal
@@ -38,7 +39,7 @@ var mutexsMutex = make(chan int, 1)
 // Enable / Disable debugger
 var logger = false
 
-// Lets you know the resolution status and the name of the
+//Resolver Lets you know the resolution status and the name of the
 // component being parallelized.
 type Resolver struct {
 	Done      chan bool
@@ -46,7 +47,7 @@ type Resolver struct {
 	capacity  int
 }
 
-// Declares a thread pool concurrently (thanks to the anonymous
+//WorkerPool Declares a thread pool concurrently (thanks to the anonymous
 // function itself launched in a parent thread). Avoids the
 // user to write the syntax of the "for" loop.
 func WorkerPool(nbThreads int, funct func(res Resolver)) {
@@ -60,26 +61,26 @@ func WorkerPool(nbThreads int, funct func(res Resolver)) {
 	}()
 }
 
-// The channels are used to make asynchronous requests.
+//Promise The channels are used to make asynchronous requests.
 // As WorkerPool the complete block is parallelized.
 func Promise(funct func(res Resolver), then func(res Resolver), catch func(res Resolver)) {
 	synchronizer.Add(1)
 	go func() {
 		res := Resolver{make(chan bool, 1), "Promise Init", 1}
-		res_then := Resolver{make(chan bool, 1), "Promise Then", 1}
-		res_catch := Resolver{make(chan bool, 1), "Promise Catch", 1}
+		resThen := Resolver{make(chan bool, 1), "Promise Then", 1}
+		resCatch := Resolver{make(chan bool, 1), "Promise Catch", 1}
 		go funct(res)
 		if status := <-res.Done; status {
-			go then(res_then)
-			manageSynchro(res_then)
+			go then(resThen)
+			manageSynchro(resThen)
 		} else {
-			go catch(res_catch)
-			manageSynchro(res_catch)
+			go catch(resCatch)
+			manageSynchro(resCatch)
 		}
 	}()
 }
 
-// Makes sure that the threads end correctly.
+//manageSynchro Makes sure that the threads end correctly.
 func manageSynchro(res Resolver) {
 	for i := 0; i < res.capacity; i++ {
 		if status := <-res.Done; !status {
@@ -92,12 +93,12 @@ func manageSynchro(res Resolver) {
 	synchronizer.Done()
 }
 
-// It is used for the ending synchronization of the father threads.
+//WaitAll It is used for the ending synchronization of the father threads.
 func WaitAll() {
 	defer synchronizer.Wait()
 }
 
-// Init a Mutex chan in global map. Protect data race access
+//InitMutex Init a Mutex chan in global map. Protect data race access
 // with a private package Mutex.
 func InitMutex(id string) {
 	mutexsMutex <- 1
@@ -108,12 +109,14 @@ func InitMutex(id string) {
 	<-mutexsMutex
 }
 
+//DeleteMutex remove mutex
 func DeleteMutex(id string) {
 	mutexsMutex <- 1
 	delete(mutexs, id)
 	<-mutexsMutex
 }
 
+//Lock lock
 func Lock(id string) {
 	mutexs[id] <- 1
 	if logger {
@@ -121,6 +124,7 @@ func Lock(id string) {
 	}
 }
 
+//Unlock unlock
 func Unlock(id string) {
 	if logger {
 		outCriticalLog()
@@ -128,7 +132,7 @@ func Unlock(id string) {
 	<-mutexs[id]
 }
 
-// Init a Semaphore chan in global map. Protect data race access
+//InitSemaphore Init a Semaphore chan in global map. Protect data race access
 // with a private package Mutex.
 func InitSemaphore(id string, nbSemaphores int) {
 	semsMutex <- 1
@@ -139,12 +143,14 @@ func InitSemaphore(id string, nbSemaphores int) {
 	<-semsMutex
 }
 
+//DeleteSemaphore delete
 func DeleteSemaphore(id string) {
 	semsMutex <- 1
 	delete(sems, id)
 	<-semsMutex
 }
 
+//Acquire acquire
 func Acquire(id string) {
 	sems[id] <- 1
 	if logger {
@@ -152,6 +158,7 @@ func Acquire(id string) {
 	}
 }
 
+//Release release
 func Release(id string) {
 	if logger {
 		outSemLog()
@@ -159,8 +166,7 @@ func Release(id string) {
 	<-sems[id]
 }
 
-// All the functions below are intended to handle logging and debugging.
-
+//ActivateLogs All the functions below are intended to handle logging and debugging.
 func ActivateLogs(act bool) {
 	logger = act
 	if act {
